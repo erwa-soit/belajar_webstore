@@ -4,7 +4,9 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProductResource\Pages;
 use App\Models\Product;
+use Dom\Text;
 use Filament\Forms;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\SpatieMediaLibraryFileUpload;
 use Filament\Forms\Components\SpatieTagsInput;
@@ -51,7 +53,8 @@ class ProductResource extends Resource
                         ->prefix('Rp'), // untuk memberikan dalam satuan rupiah
                     TextInput::make('weight')
                         ->numeric()
-                        ->suffix('gram') // untuk berat nya itu gram.
+                        ->suffix('gram'),// untuk berat nya itu gram.
+                    MarkdownEditor::make('description')
                      ])
 
 
