@@ -10,7 +10,6 @@ use App\Models\Tag;
 use Livewire\Component;
 use Livewire\WithPagination;
 
-use function GuzzleHttp\default_ca_bundle;
 
 class ProductCatalog extends Component
 {
@@ -28,7 +27,24 @@ class ProductCatalog extends Component
 
     public string $sort_by = 'newest'; // latest, price_asc, price_desc
 
+    public function mount()
+    {
+        $this->validate();
+    }
+
+    protected function rules()
+    {
+        return [
+            'select_collections' => 'array',
+            'select_collections.*' => 'integer|exists:tags,id',
+            'search' => 'nullable|string|min:3|max:30',
+            'sort_by'=> 'in:newest,latest,price_asc,price_desc'
+        ];
+    }
+
     public function applyFilters() {
+        $this->validate();
+
         $this->resetPage();
     }
 
@@ -36,11 +52,22 @@ class ProductCatalog extends Component
         $this->select_collections = [];
         $this->search = '';
         $this->sort_by = 'newest';
+        
+        $this->resetErrorBag();
         $this->resetPage();
     }
 
     public function render()
     {
+
+        // Early Return
+        $collections = ProductCollectionData::collect([]);
+        $products = ProductData::collect([]);
+        if ($this->getErrorBag()->isNotEmpty()) {
+            return view('livewire.product-catalog', compact('collections', 'products'));
+
+        }
+
         $collection_result = Tag::query()->withType('collection')->withCount('products')->get();
         // $result= Product::paginate(1); // ORM / sejenis Database Query
 
